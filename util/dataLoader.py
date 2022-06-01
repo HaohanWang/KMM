@@ -1,6 +1,7 @@
 __author__ = 'Haohan Wang'
 
 import numpy as np
+from scipy.sparse import csr_matrix
 
 def readFiles(fileName, skipFirstColumn=True, splitter=','):
     '''
@@ -33,11 +34,13 @@ def readFiles(fileName, skipFirstColumn=True, splitter=','):
 
     return data, ColNames
 
-def readNetworkFiles(fileName, names, splitter=','):
+def readNetworkFiles(fileName, names, splitter=',', sparsityFlag=2):
     '''
     :param fileName: the fileName of the network file
     the file is structured as each line is starts with a gene and follows with the gene(s) it interacts
     :param names: the geneNames returned from the fileReading
+    :param sparsityFlag: to control whether the implementation uses sparsity control:
+    .................... 0 uses original matrix, 1 uses sparse matrix, 2 chooses automatically accordingly to the sparsity of the network
     :return: the matrix sparse of network
     '''
     network = np.zeros([len(names), len(names)])
@@ -55,5 +58,13 @@ def readNetworkFiles(fileName, names, splitter=','):
                 network[n2i[n1], n2i[n2]] = 1
                 network[n2i[n2], n2i[n1]] = 1
 
-    return network
+    if sparsityFlag == 0:
+        return network
+    elif sparsityFlag == 1:
+        return csr_matrix(network)
+    else:
+        if np.sum(network) <= 0.01*len(names)*len(names):
+            return csr_matrix(network)
+        else:
+            return network
 
