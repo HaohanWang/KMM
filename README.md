@@ -1,4 +1,4 @@
-![KMM](pl.PNG "KMM")
+![KMM](kmm.png "KMM")
 
 # Kernel Mixed Model
 
