@@ -1,6 +1,7 @@
 __author__ = 'Haohan Wang'
 
 import numpy as np
+from scipy.stats import spearmanr
 
 def constructLaplacian(network):
     L = np.zeros_like(network)
@@ -20,9 +21,22 @@ def approximateInverseLaplacian(L):
 
     return J
 
-def calculateCorrelationMatrix():
-    pass
+def calculateCorrelationMatrix(X):
+    C = np.zeros([X.shape[1], X.shape[1]])
+    for i in range(X.shape[1]):
+        C[i, i] = 1
+        for j in range(i + 1, X.shape[1]):
+            C[i, j] = spearmanr(X[:, i], X[:, j])[0]
+            C[j, i] = C[i, j]
 
-def covariateRegression():
-    pass
+    return C
+
+def covariateRegression(X, c):
+    X_new = np.zeros_like(X)
+
+    tmp = np.dot(np.linalg.inv(np.dot(c.T, c)), c.T)
+    for i in range(X.shape[1]):
+        X_new[:, i] = X[:, i] - np.dot(c, np.dot(tmp, X[:, i]))
+
+    return X_new
 

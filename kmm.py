@@ -9,12 +9,6 @@ from model.KMM import KernelMixedModel
 from util.dataLoader import *
 from util.supportingFunctions import *
 
-def printOutHead(out): out.write("\t".join(["RANK", "SNP_ID", "EFFECT_SIZE_ABS"]) + "\n")
-
-def outputResult(out, rank, id, beta):
-    out.write("\t".join([str(x) for x in [rank, id, beta]]) + "\n")
-
-
 from optparse import OptionParser, OptionGroup
 
 usage = """usage: %prog [options] --file1 fileName1 --file2 fileName2
@@ -60,65 +54,38 @@ outFile = options.outputFile + '.txt'
 
 print ('Running ... ')
 
-reader = FileReader(fileName=options.fileName1, fileType=options.fileType, imputation=(not options.missing))
-X1, Y1, Xname1 = reader.readFiles()
-
-reader = FileReader(fileName=options.fileName2, fileType=options.fileType, imputation=(not options.missing))
-X2, Y2, Xname2 = reader.readFiles()
+X, genes = readFiles(options.geneFile)
+y, _ = readFiles(options.phenoFile)
+c, _ = readFiles(options.covariateFile)
+N = readNetworkFiles(options.networkFile, genes)
 
 
 model = KernelMixedModel(quiet=options.quiet, fdr=options.fdr)
 
 print ('Computation starts ... ')
 
-if options.snum is not None:  # select for a fix number of variable
-    snum = float(options.snum)
-    Beta1, Beta2 = binarySearch_Rho(model, X1, Y1, X2, Y2, snum, quiet=options.quiet)
-elif options.lmbd is not None:
-    lmbd = float(options.lmbd)
-    model.setLambda(lmbd)
-    model.setRho(float(options.rho))
-    model.setLearningRate(learningRate)  # learning rate must be set again every time we run it.
-    model.fit(X1, Y1, X2, Y2)
-    Beta1 = model.getBeta1()
-    Beta2 = model.getBeta2()
-else:
-    Beta1, Beta2 = crossValidation(model, X1, Y1, X2, Y2, learningRate)
+L = constructLaplacian(N)
+J = approximateInverseLaplacian(L)
+C = calculateCorrelationMatrix(X)
 
-ind1 = np.where(Beta1 != 0)[0]
-bs1 = Beta1[ind1].tolist()
-xname1 = []
-for i in ind1:
-    xname1.append(i)
+K = np.dot(np.dot(X, J), X.T)
+model.setJ(J)
+model.setK(K)
+model.setC(C)
+model.setN(N)
+model.setCovarianceThreshold(options.threshold)
 
-beta_name1 = zip(bs1, xname1)
-bn = sorted(beta_name1)
-bn.reverse()
+model.fit(X, y)
+neg_log_p = model.getNegLogP()
+pvalue = np.exp(-neg_log_p)
+beta = model.getBeta()
 
-out1 = open(outFile1, 'w')
-printOutHead(out1)
+idx = np.argsort(pvalue)
 
-for i in range(len(bn)):
-    outputResult(out1, i + 1, bn[i][1], bn[i][0])
+f = open(options.outputFile, 'w')
+f.writelines('gene\tp-value\teffect size')
+for i in range(len(idx)):
+    if pvalue[idx[i]] < 0.05:
+        f.writelines(genes[idx[i]] + '\t' + str(pvalue[idx[i]]) + '\t' + str(beta[idx[i]]) + '\n')
 
-out1.close()
-
-ind2 = np.where(Beta2 != 0)[0]
-bs2 = Beta2[ind2].tolist()
-xname2 = []
-for i in ind2:
-    xname1.append(i)
-
-beta_name2 = zip(bs2, xname2)
-bn = sorted(beta_name2)
-bn.reverse()
-
-out2 = open(outFile2, 'w')
-printOutHead(out2)
-
-for i in range(len(bn)):
-    outputResult(out2, i + 1, bn[i][1], bn[i][0])
-
-out1.close()
-
-print ('\nComputation ends normally, check the output file at ', outFile)
+f.close()
