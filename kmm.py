@@ -23,7 +23,7 @@ modelGroup = OptionGroup(parser, "Model Options")
 ## data options
 dataGroup.add_option("--gene", dest='geneFile', help="name of the gene expression file")
 dataGroup.add_option("--pheno", dest='phenoFile', help="name of the phenotype file")
-dataGroup.add_option("--cov", dest='covariateFile', help="name of the covariate file")
+dataGroup.add_option("--cov", dest='covariateFile', default=None, help="name of the covariate file")
 dataGroup.add_option("--net", dest='networkFile', help="name of the network file")
 dataGroup.add_option("--out", dest='outputFile', default='output', help="name of the output file")
 
@@ -56,7 +56,9 @@ print ('Running ... ')
 
 X, genes = readFiles(options.geneFile)
 y, _ = readFiles(options.phenoFile)
-c, _ = readFiles(options.covariateFile)
+if options.covariateFile is not None:
+    c, _ = readFiles(options.covariateFile)
+    X = covariateRegression(X, c)
 N = readNetworkFiles(options.networkFile, genes)
 
 
