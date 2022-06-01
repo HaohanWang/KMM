@@ -16,8 +16,8 @@ The Kernel Mixed Model incorporates the network structure to improve the study o
 
 ## File Structure:
 
-* models/ main method for the Kernel Mixed Model
-* utility/ other helper files
+* model/ main method for the Kernel Mixed Model
+* util/ other helper files
 * kmm.py main entry point of using the Kernel Mixed Model to work with your own data
 
 ## An Example Command:
@@ -27,7 +27,7 @@ python kmm.py -gene <expression values> -pheno <phenotype values> -net <network 
 ```
 #### Data Support
 * The implementation currently supports CSV files. 
-* Extensions to other data format can be easily implemented through `FileReader` in `utility/dataLoadear`. Feel free to contact us for the support of other data format. 
+* Extensions to other data format can be easily implemented through `FileReader` in `util/dataLoadear`. Feel free to contact us for the support of other data format. 
 
 ## Installation (Not Required)
 You will need to have numpy and scipy installed on your current system.
