@@ -2,3 +2,4 @@
 *.idea
 *.npy
 *.csv
+simulationResults/*
