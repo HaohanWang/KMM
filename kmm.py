@@ -1,7 +1,7 @@
 # Main file for usage of CMM (Couple Mixed Model)
 # If you find this work useful, please cite:
-# Wang H., Pei F., Vanyukov MM., Bahar I., Wu W. and Xing EP.
-# Coupled Mixed Model for Joint GWAS of Pairs of Complex Disorders with Independently Collected Datasets
+# Wang, H., Lopez, O. L., Wu, W., & Xing, E. P..
+# Gene Set Prioritization Guided by Regulatory Networks with p-values through Kernel Mixed Model.
 # Contact: {haohanw,weiwu2,epxing}@cs.cmu.edu
 
 import sys

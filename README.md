@@ -4,7 +4,7 @@
 
 Implementation of the Kernel Mixed Model in the following papers:
 
-   Wang, H., Lopez, O. L., Wu, W., & Xing, E. P. (2022, April). Gene Set Priorization Guided by Regulatory Networks with p-values through Kernel Mixed Model. In Research in Computational Molecular Biology: 26th Annual International Conference, RECOMB 2022, San Diego, CA, USA, May 22–25, 2022, Proceedings (pp. 107-125). Cham: Springer International Publishing.
+   Wang, H., Lopez, O. L., Wu, W., & Xing, E. P. (2022, April). Gene Set Prioritization Guided by Regulatory Networks with p-values through Kernel Mixed Model. In Research in Computational Molecular Biology: 26th Annual International Conference, RECOMB 2022, San Diego, CA, USA, May 22–25, 2022, Proceedings (pp. 107-125). Cham: Springer International Publishing.
    
    and others under review
 
